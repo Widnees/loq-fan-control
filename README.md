@@ -1,10 +1,18 @@
-# LOQ Fan Control
+# Lenovo LOQ Fan Control for Linux
 
 Fan control for the Lenovo LOQ 15IAX9 (machine type 83GS, BIOS NECN47WW) on Linux.
 
 The installer configures Lenovo's `lenovo_wmi_other` kernel interface, installs a small command-line controller, and listens for the laptop's Copilot key. Pressing the key cycles through automatic, low, medium, maximum, and automatic fan control. A systemd timer checks temperatures while a manual profile is active and returns control to the firmware at 85 °C.
 
-> **Hardware scope:** The calibration in this project is for the exact Lenovo LOQ 15IAX9 / 83GS / NECN47WW combination. The installer refuses other hardware unless `--force-unsupported` is explicitly supplied. Using that option is at your own risk.
+> **Hardware scope:** The calibration in this project is for the exact Lenovo LOQ 15IAX9 / 83GS / NECN47WW combination. Both the installer and the installed controller check this combination. `--force-unsupported` bypasses only the installer's hardware check; the controller still refuses fan-mode changes on other models or BIOS versions.
+
+## Compatibility with other Lenovo LOQ laptops
+
+This version supports only Lenovo LOQ 15IAX9, machine type `83GS`, with BIOS `NECN47WW`. Even a different BIOS version on the same model is rejected by the current checks.
+
+Other LOQ models may be candidates for future support, but compatibility is not established by sharing the LOQ name. Support requires checking the model's `lenovo_wmi_other` interface, two writable fan targets, firmware behavior, and model-specific fan calibration, then validating automatic control and the temperature fallback on that hardware. The current raw fan values and approximate RPM figures must not be assumed to apply to other models.
+
+`--force-unsupported` does not enable support for another laptop: it skips the installer's DMI/BIOS check but does not bypass the installed controller's independent check.
 
 ## Features
 
@@ -81,7 +89,7 @@ journalctl -u loq-copilot-fan.service
 journalctl -t loq-fan-control
 ```
 
-Common causes of a failed installation are an unsupported model or BIOS, a kernel older than 7.2.2, a missing `lenovo_wmi_other` interface, or a missing graphical session for notifications. `--force-unsupported` bypasses only the model check; it does not bypass kernel or fan-interface checks.
+Common causes of a failed installation are an unsupported model or BIOS, a kernel older than 7.2.2, a missing `lenovo_wmi_other` interface, or a missing graphical session for notifications. `--force-unsupported` bypasses only the installer's DMI/BIOS check; it does not bypass the installed controller's model/BIOS check, kernel checks, or fan-interface checks.
 
 ## Uninstallation
 
